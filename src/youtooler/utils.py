@@ -4,22 +4,6 @@ import requests
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
-from sys import stderr
-
-def create_storage_dir() -> str:
-    '''
-    Creates the temporary storage directory of the program ('/tmp/youtooler') and returns its path.
-    '''
-
-    STORAGE_DIR = '/tmp/youtooler'
-
-    try:
-        os.mkdir(STORAGE_DIR)
-    except:
-        print(get_error_message('STRDIR'), file=stderr)
-        exit()
-
-    return STORAGE_DIR
 
 def get_arguments():
     '''

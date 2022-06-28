@@ -1,12 +1,15 @@
 import atexit
 import shutil
+import os
 from colorama import Fore, Back, Style
+from sys import stderr
 from youtooler.thread import YoutoolerThread
-from youtooler.utils import get_video_duration, get_error_message, stderr
+from youtooler.utils import get_video_duration, get_error_message
 
 class Youtooler:
     def __init__(self):
         self.__exit_handler = atexit.register(self.clean)
+        self.__storage_dir = self.__create_storage_dir__()
         self.socks_ports = [9050, 9052, 9054, 9056, 9058]
         self.threads = []
 
@@ -44,3 +47,18 @@ class Youtooler:
             shutil.rmtree('/tmp/youtooler')
         except OSError:
             print(get_error_message('RMSDIR'), file=stderr)
+
+    def __create_storage_dir__(self) -> str:
+        '''
+        Creates the temporary storage directory of the program ('/tmp/youtooler') and returns its path.
+        '''
+
+        STORAGE_DIR = '/tmp/youtooler'
+
+        try:
+            os.mkdir(STORAGE_DIR)
+        except:
+            print(get_error_message('STRDIR'), file=stderr)
+            exit()
+
+        return STORAGE_DIR
