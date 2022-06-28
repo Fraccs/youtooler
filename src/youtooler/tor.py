@@ -1,17 +1,15 @@
 import os
 import random
 import requests
-import signal
 import subprocess
 
-class Tor():
+class Tor:
     '''
     Simplifies the creation of TOR circuits.
     '''
 
     def __init__(self, socks_port: int):
         self.socks_port = socks_port
-        self.process_pid = 0
         self.torrc_path = self.__create_temp_torrc__(socks_port)
         self.is_tor_started = False
 
@@ -20,19 +18,19 @@ class Tor():
         Starts a TOR subprocess on the specified port.
         '''
 
-        if not self.is_tor_started:
-            tor_process = subprocess.Popen(['tor', '-f', self.torrc_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            
-            self.process_pid = tor_process.pid
-            self.is_tor_started = True
+        if self.is_tor_started:
+            return
 
-    def kill_tor(self):
+        self.tor_process = subprocess.Popen(['tor', '-f', self.torrc_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.is_tor_started = True
+
+    def stop_tor(self):
         '''
         Kills TOR if running.
         '''
 
         if self.is_tor_started:
-            os.kill(self.process_pid, signal.SIGTERM)
+            self.tor_process.terminate()
             self.is_tor_started = False
 
     def get_external_address(self):
