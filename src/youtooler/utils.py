@@ -39,7 +39,8 @@ def get_error_message(err: str) -> str:
     error_message = {
         'INVURL': 'The passed url is not valid.',
         'STRDIR': 'Could not create the storage directory... run the program again.',
-        'DTADIR': 'Could not create the data directory... run the program again.'
+        'DTADIR': 'Could not create the data directory... run the program again.',
+        'RMSDIR': 'Could not remove the storage directory.'
     }
     
     return f'{Style.BRIGHT}{Fore.RED}Error: {error_message[err]}{Style.RESET_ALL}'
