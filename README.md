@@ -1,3 +1,9 @@
+![GitHub top language](https://img.shields.io/github/languages/top/Fraccs/youtooler)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Fraccs/youtooler/youtooler)
+![GitHub](https://img.shields.io/github/license/Fraccs/youtooler)
+![GitHub issues](https://img.shields.io/github/issues/Fraccs/youtooler)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Fraccs/youtooler)
+
 # Youtooler
 
 > Multithreaded YouTube viewer BOT based on TOR.

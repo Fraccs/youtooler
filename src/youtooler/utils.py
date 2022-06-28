@@ -57,7 +57,7 @@ def get_video_duration(url: str) -> int:
         return DEFAULT_DURATION
 
     # Parsing response
-    parsed_html = BeautifulSoup(html.text, features='lxml')
+    parsed_html = BeautifulSoup(markup=html.text)
 
     # Searching for the tag <meta itemprop="duration" content="">
     duration_tag = parsed_html.find('meta', {'itemprop': 'duration'})
@@ -77,6 +77,9 @@ def verify_youtube_url(url: str) -> bool:
     Checks whether the passed url is a real YouTube video or not.
     '''
     
+    if not url.find('&') == -1:
+        return False
+
     if not url.find('https://www.youtube.com/watch?v=') == 0:
         return False
 
