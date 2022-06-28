@@ -77,6 +77,9 @@ def verify_youtube_url(url: str) -> bool:
     Checks whether the passed url is a real YouTube video or not.
     '''
     
+    if not url.find('&') == -1:
+        return False
+
     if not url.find('https://www.youtube.com/watch?v=') == 0:
         return False
 
