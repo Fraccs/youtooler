@@ -1,9 +1,9 @@
 import isodate
-import os
 import requests
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
+from sys import stderr
 
 def get_arguments():
     '''
