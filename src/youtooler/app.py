@@ -8,7 +8,7 @@ from youtooler.utils import get_video_duration, get_error_message
 
 class Youtooler:
     def __init__(self):
-        self.__exit_handler = atexit.register(self.clean)
+        self.__exit_handler = atexit.register(self.stop)
         self.__storage_dir = self.__create_storage_dir__()
         self.socks_ports = [9050, 9052, 9054, 9056, 9058]
         self.threads = []
@@ -36,9 +36,22 @@ class Youtooler:
             self.threads.append(YoutoolerThread(url, video_duration, port))
         
         for thread in self.threads:
+            thread.setDaemon(True)
             thread.start()
 
-    def clean(self):
+    def stop(self):
+        '''
+        Stops the execution of the threads and their subprocesses.
+        '''
+        try:
+            for thread in self.threads:
+                thread.join()
+        except AttributeError:
+            pass
+
+        self.__clean__()
+
+    def __clean__(self):
         '''
         Removes the temporary storage directory and its subdirectories.
         '''
