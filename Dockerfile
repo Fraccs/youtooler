@@ -1,9 +1,23 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10
+FROM python:alpine3.10
 
 WORKDIR /
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-COPY . .
+RUN apk update
 
-CMD ["python3", "src/youtooler.py", "--url", "https://youtube.com/watch?v=AhFdp8mJE_U"]
+# Install TOR
+RUN apk add tor
+
+# Install Chrome
+
+# Install Chromedriver
+
+# Install Python requirements
+COPY requirements.txt requirements.txt
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install -r requirements.txt
+
+# Install youtooler package
+COPY . .
+RUN pip3 install -e .
+
+CMD ["python3", "src/youtooler.py", "--url", "https://www.youtube.com/watch?v=AhFdp8mJE_U"]
