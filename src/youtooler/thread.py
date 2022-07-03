@@ -42,6 +42,6 @@ class YoutoolerThread(threading.Thread):
                 print(f'{Style.BRIGHT}{Fore.RED}Unsuccessful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
             else:
                 print(f'{Style.BRIGHT}{Fore.GREEN}Successful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
-                time.sleep(random.uniform(10, 20))
+                time.sleep(random.uniform(10, 15))
 
             self.tor.stop_tor() # Closing TOR circuit

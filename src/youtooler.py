@@ -3,16 +3,14 @@ from youtooler import utils
 
 def main():
     app = Youtooler()
-    
     app.print_logo()
 
-    args = utils.get_arguments()
+    args = utils.get_arguments() # Parsing CLI args
 
     if utils.verify_youtube_url(args.url):
-        utils.create_storage_dir()
         app.start(args.url)
     else:
-        print(utils.get_error_message('INVURL'), utils.stderr)
+        print(utils.get_error_message('INVURL'), file=utils.stderr)
 
 if __name__ == '__main__':
     main()
