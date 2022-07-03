@@ -36,39 +36,51 @@ def get_video_duration(url: str) -> int:
 
     DEFAULT_DURATION = 300 # Default value (5 min)
 
-    html = requests.get(url)
-    
-    if not html.status_code in range(200, 300):
-        return DEFAULT_DURATION
+    for _ in range(10): # 10 retries
+        try:
+            html = requests.get(url)
+        except ConnectionError:
+            continue
 
-    # Parsing response
-    parsed_html = BeautifulSoup(markup=html.text)
+        # Parsing response
+        parsed_html = BeautifulSoup(markup=html.text)
 
-    # Searching for the tag <meta itemprop="duration" content="">
-    duration_tag = parsed_html.find('meta', {'itemprop': 'duration'})
+        # Searching for the tag <meta itemprop="duration" content="">
+        duration_tag = parsed_html.find('meta', {'itemprop': 'duration'})
 
-    if duration_tag is None: # Tag not found
-        return DEFAULT_DURATION
+        if duration_tag is None: # Tag not found
+            return DEFAULT_DURATION
 
-    iso_8601_duration = duration_tag.attrs['content']
+        iso_8601_duration = duration_tag.attrs['content']
 
-    # Converting to minutes and seconds
-    duration = isodate.parse_duration(iso_8601_duration)
+        # Converting to minutes and seconds
+        duration = isodate.parse_duration(iso_8601_duration)
 
-    return duration.seconds
+        return duration.seconds
 
 def verify_youtube_url(url: str) -> bool:
     '''
     Checks whether the passed url is a real YouTube video or not.
     '''
     
+    # URL analisys
     if not url.find('&') == -1:
         return False
 
     if not url.find('https://www.youtube.com/watch?v=') == 0:
         return False
 
-    if not requests.get(url).status_code in range(200, 300):
-        return False
+    for _ in range(10): # 10 retries
+        # Checking if video exists
+        try:
+            html = requests.get(url)
+        except ConnectionError:
+            continue
 
-    return True
+        parsed_html = BeautifulSoup(markup=html.text)
+
+        # Searching for the tag <meta name="title" content="">
+        title_tag = parsed_html.find('meta', {'name': 'title'})
+        title = title_tag.attrs['content']
+
+        return True if title != "" else False
