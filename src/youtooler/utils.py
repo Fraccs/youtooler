@@ -44,7 +44,7 @@ def get_video_duration(url: str) -> int:
             continue
 
         # Parsing response
-        parsed_html = BeautifulSoup(markup=html.text, features='html5lib')
+        parsed_html = BeautifulSoup(markup=html.text, features='lxml')
 
         # Searching for the tag <meta itemprop="duration" content="">
         duration_tag = parsed_html.find('meta', {'itemprop': 'duration'})
@@ -78,7 +78,7 @@ def verify_youtube_url(url: str) -> bool:
         except ConnectionError:
             continue
 
-        parsed_html = BeautifulSoup(markup=html.text, features='html5lib')
+        parsed_html = BeautifulSoup(markup=html.text, features='lxml')
 
         # Searching for the tag <meta name="title" content="">
         title_tag = parsed_html.find('meta', {'name': 'title'})
