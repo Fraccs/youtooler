@@ -16,6 +16,7 @@ idna==3.3
     # via requests
 isodate==0.6.1
     # via -r requirements.in
+lxml==4.8.0
 python-dotenv==0.20.0
     # via webdriver-manager
 requests==2.27.1
