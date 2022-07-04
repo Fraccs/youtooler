@@ -4,6 +4,7 @@ import threading
 import time
 from colorama import Fore, Style
 from selenium.webdriver import Firefox, DesiredCapabilities
+from selenium.common.exceptions import NoSuchElementException
 from youtooler.tor import *
 
 class YoutoolerThread(threading.Thread):
@@ -43,6 +44,22 @@ class YoutoolerThread(threading.Thread):
                 print(f'{Style.BRIGHT}{Fore.RED}Unsuccessful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
             else:
                 print(f'{Style.BRIGHT}{Fore.GREEN}Successful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
+                
+                # Accepting cookies
+                cookie_buttons = driver.find_elements_by_css_selector('.yt-simple-endpoint.style-scope.ytd-button-renderer')
+
+                for button in cookie_buttons:
+                    if button.text == 'ACCEPT ALL':
+                        button.click()
+
+                # Starting video
+                try:
+                    start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+                except NoSuchElementException:
+                    pass
+                else:
+                    start_button.click()
+
                 time.sleep(random.uniform(10, 15))
 
             self.tor.stop_tor() # Closing TOR circuit
