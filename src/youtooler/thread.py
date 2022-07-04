@@ -54,12 +54,16 @@ class YoutoolerThread(threading.Thread):
                         button.click()
 
                 # Starting video
-                start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
-                
                 try:
-                    start_button.click()
-                except ElementClickInterceptedException as e:
-                    print(get_error_message('NOPLAY'), file=stderr)
+                    start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+                except:
+                    continue
+                else:
+                    try:
+                        start_button.click()
+                    except ElementClickInterceptedException as e:
+                        print(get_error_message('NOPLAY'), file=stderr)
+                        continue
 
                 time.sleep(random.uniform(10, 15))
 
