@@ -3,11 +3,9 @@ import random
 import threading
 import time
 from colorama import Fore, Style
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver import Firefox, DesiredCapabilities
+from selenium.common.exceptions import NoSuchElementException
 from youtooler.tor import *
-from webdriver_manager.chrome import ChromeDriverManager
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -23,12 +21,16 @@ class YoutoolerThread(threading.Thread):
         self.__exit_handler = atexit.register(self.tor.stop_tor)
 
     def run(self):
-        # Chrome WebDriver setup
-        options = Options()
-        options.add_argument(f'--proxy-server=socks5://localhost:{self.tor.socks_port}')
-        options.add_argument('--disable-audio-output')
+        # Firefox proxy setup
+        firefox_capabilities = DesiredCapabilities.FIREFOX
+        firefox_capabilities['proxy'] = {
+            'proxyType': 'MANUAL',
+            'socksProxy': f'localhost:{self.tor.socks_port}',
+            'socksVersion': 5
+        }
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # Firefox setup
+        driver = Firefox(capabilities=firefox_capabilities)
         driver.set_window_size(width=600, height=400)
 
         while True:
@@ -42,6 +44,22 @@ class YoutoolerThread(threading.Thread):
                 print(f'{Style.BRIGHT}{Fore.RED}Unsuccessful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
             else:
                 print(f'{Style.BRIGHT}{Fore.GREEN}Successful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
+                
+                # Accepting cookies
+                cookie_buttons = driver.find_elements_by_css_selector('.yt-simple-endpoint.style-scope.ytd-button-renderer')
+
+                for button in cookie_buttons:
+                    if button.text == 'ACCEPT ALL':
+                        button.click()
+
+                # Starting video
+                try:
+                    start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+                except NoSuchElementException:
+                    pass
+                else:
+                    start_button.click()
+
                 time.sleep(random.uniform(10, 15))
 
             self.tor.stop_tor() # Closing TOR circuit
