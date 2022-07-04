@@ -4,8 +4,9 @@ import threading
 import time
 from colorama import Fore, Style
 from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import *
 from youtooler.tor import *
+from youtooler.utils import get_error_message, stderr
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -53,12 +54,12 @@ class YoutoolerThread(threading.Thread):
                         button.click()
 
                 # Starting video
+                start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+                
                 try:
-                    start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
-                except NoSuchElementException:
-                    pass
-                else:
                     start_button.click()
+                except ElementClickInterceptedException as e:
+                    print(get_error_message('NOPLAY'), file=stderr)
 
                 time.sleep(random.uniform(10, 15))
 
