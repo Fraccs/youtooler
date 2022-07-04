@@ -3,11 +3,8 @@ import random
 import threading
 import time
 from colorama import Fore, Style
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver import Firefox, DesiredCapabilities
 from youtooler.tor import *
-from webdriver_manager.chrome import ChromeDriverManager
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -23,12 +20,16 @@ class YoutoolerThread(threading.Thread):
         self.__exit_handler = atexit.register(self.tor.stop_tor)
 
     def run(self):
-        # Chrome WebDriver setup
-        options = Options()
-        options.add_argument(f'--proxy-server=socks5://localhost:{self.tor.socks_port}')
-        options.add_argument('--disable-audio-output')
+        # Firefox proxy setup
+        firefox_capabilities = DesiredCapabilities.FIREFOX
+        firefox_capabilities['proxy'] = {
+            'proxyType': 'MANUAL',
+            'socksProxy': f'localhost:{self.tor.socks_port}',
+            'socksVersion': 5
+        }
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        # Firefox setup
+        driver = Firefox(capabilities=firefox_capabilities)
         driver.set_window_size(width=600, height=400)
 
         while True:
