@@ -4,4 +4,4 @@ services:
   app:
     build:
       context: .
-    # restart: unless-stopped
+    restart: unless-stopped
