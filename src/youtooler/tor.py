@@ -3,12 +3,7 @@ import random
 import shutil
 import requests
 import subprocess
-
-class DataDirException(Exception):
-    pass
-
-class TorNotStartedException(Exception):
-    pass
+from .helpers.exceptions import TorStartFailedException, TorDataDirectoryException
 
 class Tor:
     '''Simplifies the creation of TOR circuits.'''
@@ -34,7 +29,7 @@ class Tor:
         
         # TOR could not start
         if not self.is_tor_started:
-            raise TorNotStartedException
+            raise TorStartFailedException
 
     def stop_tor(self):
         '''Kills TOR process if it is running.'''
@@ -47,7 +42,7 @@ class Tor:
         try: # Removing the data directory
             shutil.rmtree(f'/tmp/youtooler/{self.socks_port}', ignore_errors=True)
         except OSError:
-            raise DataDirException
+            raise TorDataDirectoryException
 
         self.is_tor_started = False
 
@@ -85,7 +80,7 @@ class Tor:
 
             try:
                 response = requests.get(api, proxies=proxies)
-            except:
+            except ConnectionError: # Removing API if not working
                 apis.pop(apis.index(api))
             else:
                 if response.status_code in range(200, 300):
@@ -105,7 +100,7 @@ class Tor:
         try:
             os.mkdir(DATA_DIR)
         except OSError:
-            raise DataDirException
+            raise TorDataDirectoryException
         else:
             with open(TORRC_PATH, 'w') as torrc:
                 torrc.write(f'SocksPort {socks_port}\nDataDirectory {DATA_DIR}\n')
