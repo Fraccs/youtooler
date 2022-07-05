@@ -6,8 +6,9 @@ from colorama import Fore, Style
 from selenium.common.exceptions import *
 from selenium.webdriver import Firefox, DesiredCapabilities
 from selenium.webdriver.firefox.options import Options
-from youtooler.tor import *
-from youtooler.utils import get_error_message, stderr
+from .tor import *
+from .utils import get_error_message, stderr
+from .helpers.exceptions import TorStartFailedException
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -37,13 +38,18 @@ class YoutoolerThread(threading.Thread):
 
         # Firefox setup
         driver = Firefox(capabilities=firefox_capabilities, options=options)
-        driver.set_window_size(width=600, height=400)
 
         while True:
-            self.tor.start_tor() # Creating new TOR circuit
+            # Creating new TOR circuit
+            try:
+                self.tor.start_tor()
+            except TorStartFailedException:
+                print(f'{Style.BRIGHT}{Fore.RED}Failed while creating a new Tor circuit on socks_port: {self.tor.socks_port}{Style.RESET_ALL}')
+                exit()
+            else:
+                print(f'{Style.BRIGHT}{Fore.GREEN}Created a new Tor circuit on socks_port: {self.tor.socks_port}{Style.RESET_ALL}')
 
-            print(f'{Style.BRIGHT}{Fore.GREEN}Created a new Tor circuit on socks_port: {self.tor.socks_port}{Style.RESET_ALL}')
-
+            # Video request
             try:
                 driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')  
             except:
@@ -61,18 +67,18 @@ class YoutoolerThread(threading.Thread):
                 # Starting video
                 try:
                     start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
-                except:
+                except NoSuchElementException:
                     driver.delete_all_cookies()
                     self.tor.stop_tor() # Closing TOR circuit
                     continue
-                else:
-                    try:
-                        start_button.click()
-                    except ElementClickInterceptedException as e:
-                        print(get_error_message('NOPLAY'), file=stderr)
-                        driver.delete_all_cookies()
-                        self.tor.stop_tor() # Closing TOR circuit
-                        continue
+                
+                try:
+                    start_button.click()
+                except ElementClickInterceptedException:
+                    print(get_error_message('NOPLAY'), file=stderr)
+                    driver.delete_all_cookies()
+                    self.tor.stop_tor() # Closing TOR circuit
+                    continue
 
                 time.sleep(random.uniform(10, 15))
 
