@@ -10,28 +10,25 @@ certifi==2022.6.15
     # via requests
 charset-normalizer==2.0.12
     # via requests
-colorama==0.4.4
+colorama==0.4.5
     # via -r requirements.in
 idna==3.3
     # via requests
 isodate==0.6.1
     # via -r requirements.in
-lxml==4.8.0
-python-dotenv==0.20.0
-    # via webdriver-manager
+python-string-utils==1.0.0
+    # via -r requirements.in
 requests==2.27.1
-    # via
-    #   -r requirements.in
-    #   webdriver-manager
+    # via -r requirements.in
 selenium==4.0.0a1
     # via -r requirements.in
 six==1.16.0
     # via isodate
 soupsieve==2.3.2.post1
     # via beautifulsoup4
+stem==1.8.0
+    # via -r requirements.in
 urllib3==1.26.9
     # via
     #   requests
     #   selenium
-webdriver-manager==3.7.0
-    # via -r requirements.in
