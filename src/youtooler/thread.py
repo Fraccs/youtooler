@@ -3,8 +3,9 @@ import random
 import threading
 import time
 from colorama import Fore, Style
-from selenium.webdriver import Firefox, DesiredCapabilities
 from selenium.common.exceptions import *
+from selenium.webdriver import Firefox, DesiredCapabilities
+from selenium.webdriver.firefox.options import Options
 from youtooler.tor import *
 from youtooler.utils import get_error_message, stderr
 
@@ -29,6 +30,10 @@ class YoutoolerThread(threading.Thread):
             'socksProxy': f'localhost:{self.tor.socks_port}',
             'socksVersion': 5
         }
+
+        # Headless mode
+        options = Options()
+        options.headless = True
 
         # Firefox setup
         driver = Firefox(capabilities=firefox_capabilities)
