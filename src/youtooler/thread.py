@@ -69,7 +69,7 @@ class YoutoolerThread(threading.Thread):
                     start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
                 except NoSuchElementException:
                     driver.delete_all_cookies()
-                    self.tor.stop_tor() # Closing TOR circuit
+                    self.tor.renew_circuit() # Closing TOR circuit
                     continue
                 
                 try:
@@ -77,10 +77,10 @@ class YoutoolerThread(threading.Thread):
                 except ElementClickInterceptedException:
                     print(get_error_message('NOPLAY'), file=stderr)
                     driver.delete_all_cookies()
-                    self.tor.stop_tor() # Closing TOR circuit
+                    self.tor.renew_circuit() # Closing TOR circuit
                     continue
 
                 time.sleep(random.uniform(10, 15))
 
             driver.delete_all_cookies()
-            self.tor.stop_tor() # Closing TOR circuit
+            self.tor.renew_circuit() # Closing TOR circuit

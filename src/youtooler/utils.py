@@ -1,10 +1,11 @@
 import isodate
 import requests
+import string_utils
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
 from sys import stderr
-from .helpers.exceptions import DurationUnestablishedException, ErrorMessageException
+from .helpers.exceptions import *
 
 def get_arguments():
     '''Returns a Namespace containing the cli args.'''
@@ -29,6 +30,21 @@ def get_error_message(err: str) -> str:
         raise ErrorMessageException
     
     return f'{Style.BRIGHT}{Fore.RED}Error: {error_messages[err]}{Style.RESET_ALL}'
+
+def get_secure_password(length: int=20):
+    ascii_lowercase = 'abcdefghijklmnopqrstuvwxyz'
+    ascii_uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    digits = '0123456789'
+    symbols = '!#$%&?@'
+
+    characters = ascii_lowercase + ascii_uppercase + digits + symbols
+
+    if length < 12 or length > len(characters):
+        raise UnsecureLength
+
+    shuffled = string_utils.shuffle(characters)
+    
+    return shuffled[:length]
 
 def get_video_duration(url: str) -> int:
     '''Calculates the duration in seconds of the passed video.'''
