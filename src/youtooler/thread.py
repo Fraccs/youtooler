@@ -36,7 +36,7 @@ class YoutoolerThread(threading.Thread):
         options.headless = True
 
         # Firefox setup
-        driver = Firefox(capabilities=firefox_capabilities)
+        driver = Firefox(capabilities=firefox_capabilities, options=options)
         driver.set_window_size(width=600, height=400)
 
         while True:
