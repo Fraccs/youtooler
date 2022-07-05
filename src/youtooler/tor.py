@@ -1,15 +1,21 @@
 import os
 import random
 import shutil
+import re
 import requests
 import subprocess
-from .helpers.exceptions import TorStartFailedException, TorDataDirectoryException
+from stem import Signal
+from stem.control import Controller
+from .helpers.exceptions import TorHashingException, TorStartFailedException, TorDataDirectoryException
+from .utils import get_secure_password
 
 class Tor:
     '''Simplifies the creation of TOR circuits.'''
 
     def __init__(self, socks_port: int):
         self.socks_port = socks_port
+        self.control_port = socks_port + 1
+        self.password = get_secure_password(20)
         self.torrc_path = self.__create_temp_torrc__(socks_port)
         self.is_tor_started = False
 
@@ -30,6 +36,13 @@ class Tor:
         # TOR could not start
         if not self.is_tor_started:
             raise TorStartFailedException
+
+    def renew_circuit(self):
+        '''Sends NEWNYM signal to the TOR control port in order to renew the circuit'''
+
+        with Controller.from_port(self.control_port) as controller:
+            controller.authenticate(password=self.password)
+            controller.signal(Signal.NEWNYM)
 
     def stop_tor(self):
         '''Kills TOR process if it is running.'''
@@ -96,13 +109,30 @@ class Tor:
 
         DATA_DIR = f'/tmp/youtooler/{socks_port}'
         TORRC_PATH = f'/tmp/youtooler/torrc.{socks_port}'
-        
+
+        hashed_password = self.password
+
+        with subprocess.Popen(['tor', '--hash-password', self.password], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as tor_hasher:
+            for line in tor_hasher.stdout:
+                line = line.decode('UTF-8')
+                line.strip()
+
+                if re.match('^16:[0-9A-F]{58}$', line):
+                    hashed_password = line
+                    break
+            
+            if hashed_password == self.password:
+                raise TorHashingException
+
         try:
             os.mkdir(DATA_DIR)
         except OSError:
             raise TorDataDirectoryException
         else:
             with open(TORRC_PATH, 'w') as torrc:
-                torrc.write(f'SocksPort {socks_port}\nDataDirectory {DATA_DIR}\n')
+                torrc.write(f'SocksPort {socks_port}\n')
+                torrc.write(f'DataDirectory {DATA_DIR}\n')
+                torrc.write(f'ControlPort {self.control_port}\n')
+                torrc.write(f'HashedControlPassword {hashed_password}')
 
         return TORRC_PATH
