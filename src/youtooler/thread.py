@@ -31,13 +31,10 @@ class YoutoolerThread(threading.Thread):
             'socksVersion': 5
         }
 
-        # Headless mode
-        options = Options()
-        options.headless = True
-
         # Firefox setup
-        driver = Firefox(capabilities=firefox_capabilities, options=options)
-        
+        driver = Firefox(capabilities=firefox_capabilities)
+        driver.set_window_size(500, 300)
+
         # Starting TOR
         try:
             self.tor.start_tor()
