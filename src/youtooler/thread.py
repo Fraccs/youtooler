@@ -2,12 +2,11 @@ import atexit
 import random
 import threading
 import time
-from colorama import Fore, Style
 from selenium.common.exceptions import *
 from selenium.webdriver import Firefox, DesiredCapabilities
 from selenium.webdriver.firefox.options import Options
 from .tor import *
-from .utils import get_error_message, stderr
+from .utils import get_error_message, get_log_message, get_warning_message, stderr
 from .helpers.exceptions import TorStartFailedException
 
 class YoutoolerThread(threading.Thread):
@@ -43,10 +42,10 @@ class YoutoolerThread(threading.Thread):
         try:
             self.tor.start_tor()
         except TorStartFailedException:
-            print(f'{Style.BRIGHT}{Fore.RED}Failed while starting TOR on SocksPort {self.tor.socks_port}, ControlPort {self.tor.control_port}{Style.RESET_ALL}')
+            print(get_error_message('TOR-NOT-STARTED', self.tor.socks_port, self.tor.control_port), file=stderr)
             exit()
         else:
-            print(f'{Style.BRIGHT}{Fore.GREEN}Started TOR on SocksPort {self.tor.socks_port}, ControlPort {self.tor.control_port}{Style.RESET_ALL}')
+            print(get_log_message('TOR-STARTED', self.tor.socks_port, self.tor.control_port))
 
         while True:
             self.tor.renew_circuit() # Renewing circuit each cycle
@@ -56,10 +55,10 @@ class YoutoolerThread(threading.Thread):
             try:
                 driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')  
             except:
-                print(f'{Style.BRIGHT}{Fore.RED}Unsuccessful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
+                print(get_warning_message('REQUEST-FAILED', self.name, self.tor.get_external_address()), file=stderr)
             else:
-                print(f'{Style.BRIGHT}{Fore.GREEN}Successful request made by {self.name} | Tor IP: {self.tor.get_external_address()}{Style.RESET_ALL}')
-                
+                print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
+
                 # Accepting cookies
                 cookie_buttons = driver.find_elements_by_css_selector('.yt-simple-endpoint.style-scope.ytd-button-renderer')
 
@@ -71,12 +70,16 @@ class YoutoolerThread(threading.Thread):
                 try:
                     start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
                 except NoSuchElementException:
+                    print(get_warning_message('PLAY-BTN-NOT-FOUND'), file=stderr)
                     continue
                 
                 try:
                     start_button.click()
                 except ElementClickInterceptedException:
-                    print(get_error_message('NOPLAY'), file=stderr)
+                    print(get_warning_message('PLAY-BTN-UNREACHABLE'), file=stderr)
+                    continue
+                except ElementNotInteractableException:
+                    print(get_warning_message('PLAY-BTN-UNSCROLLABLE'), file=stderr)
                     continue
 
                 time.sleep(random.uniform(10, 15))
