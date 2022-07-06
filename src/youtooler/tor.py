@@ -28,11 +28,14 @@ class Tor:
         self.tor_process = subprocess.Popen(['tor', '-f', self.torrc_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         # Waiting for TOR to start
-        for line in self.tor_process.stdout:
-            if b'100%' in line:
-                self.is_tor_started = True
-                break
-        
+        try:
+            for line in self.tor_process.stdout:
+                if b'100%' in line:
+                    self.is_tor_started = True
+                    break
+        except TypeError: # Catching iteration of NoneType
+            pass
+
         # TOR could not start
         if not self.is_tor_started:
             raise TorStartFailedException
