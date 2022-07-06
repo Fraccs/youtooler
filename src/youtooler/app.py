@@ -58,7 +58,7 @@ class Youtooler:
         try:
             shutil.rmtree('/tmp/youtooler')
         except OSError:
-            print(get_error_message('RMSDIR'), file=stderr)
+            print(get_error_message('STORAGE-DIR-REMOVE'), file=stderr)
 
     def __create_storage_dir__(self) -> str:
         '''
@@ -69,8 +69,8 @@ class Youtooler:
 
         try:
             os.mkdir(STORAGE_DIR)
-        except:
-            print(get_error_message('STRDIR'), file=stderr)
+        except FileExistsError:
+            print(get_error_message('STORAGE-DIR-CREATE'), file=stderr)
             exit()
 
         return STORAGE_DIR
