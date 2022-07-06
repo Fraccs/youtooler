@@ -10,7 +10,7 @@ def main():
     if utils.verify_youtube_url(args.url):
         app.start(args.url)
     else:
-        print(utils.get_error_message('INVURL'), file=utils.stderr)
+        print(utils.get_error_message('INVALID-URL'), file=utils.stderr)
 
 if __name__ == '__main__':
     main()

@@ -2,7 +2,7 @@ class DurationUnestablishedException(Exception):
     '''Raised if the duration of a video couldn't be established'''
     pass
 
-class ErrorMessageException(Exception):
+class LogMessageException(Exception):
     '''Raised if an error message that doesn't exist is requested'''
     pass
 
