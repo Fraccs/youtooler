@@ -43,6 +43,9 @@ class Tor:
     def renew_circuit(self):
         '''Sends NEWNYM signal to the TOR control port in order to renew the circuit'''
 
+        if not self.is_tor_started:
+            return
+
         with Controller.from_port(port=self.control_port) as controller:
             controller.authenticate(password=self.password)
             controller.signal(Signal.NEWNYM)
