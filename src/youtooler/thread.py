@@ -6,8 +6,7 @@ from selenium.common.exceptions import *
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from .tor import *
-from .utils import get_error_message, get_log_message, get_warning_message, stderr
-from .helpers.exceptions import TorStartFailedException
+from .utils import get_log_message, get_warning_message, stderr
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -20,32 +19,24 @@ class YoutoolerThread(threading.Thread):
         self.url = url
         self.video_duration = video_duration
         self.tor = Tor(socks_port)
-        self.__exit_handler = atexit.register(self.tor.stop_tor)
 
     def run(self):
         # Proxying through TOR
         firefox_capabilities = DesiredCapabilities.FIREFOX
         firefox_capabilities['proxy'] = {
             'proxyType': 'MANUAL',
-            'socksProxy': f'app:{self.tor.socks_port}',
+            'socksProxy': f'tor:{self.tor.socks_port}',
             'socksVersion': 5
         }
 
-        time.sleep(5)
-        driver = Remote('http://firefox:4444/wd/hub', DesiredCapabilities.FIREFOX)
+        time.sleep(20)
 
-        # Starting TOR
-        try:
-            self.tor.start_tor()
-        except TorStartFailedException:
-            print(get_error_message('TOR-NOT-STARTED', self.tor.socks_port, self.tor.control_port), file=stderr)
-            exit()
-        else:
-            print(get_log_message('TOR-STARTED', self.tor.socks_port, self.tor.control_port))
+        driver = Remote('http://firefox:4444/wd/hub', DesiredCapabilities.FIREFOX)
 
         while True:
             time.sleep(5)
-            self.tor.renew_circuit() # Renewing circuit each cycle
+
+            # self.tor.renew_circuit() # Renewing circuit each cycle
             driver.delete_all_cookies()
 
             # Video request
