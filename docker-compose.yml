@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build: .
+    depends_on:
+      - firefox
+    hostname: app
+    networks:
+      - network
+  firefox:
+    image: selenium/standalone-firefox
+    hostname: firefox
+    ports:
+      - 4444:4444
+    networks:
+      - network
+networks:
+  network:
+    driver: bridge
