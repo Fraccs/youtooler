@@ -14,35 +14,49 @@
 
 ***This is just an experiment, the usage of this program is NOT RECCOMENDED.***
 
-***Most TOR nodes are blacklisted, this makes the potential gains obtainable with the program close to none, furthermore YouTube could reset the views counter of the video at any time if any suspicious activity is detected.***
-
 ## Requirements
 
-- **Linux** Mid-High end machine.
+- **Linux** High end machine
 
 - **Python** 3.10.x
 
-- **Chrome** browser.
+- **Firefox**
 
-- **TOR** (not TOR browser).
+- **Geckodriver**
+
+- **TOR**
 
 - **High speed** internet connection.
 
-## Chrome Installation (Debian / Ubuntu)
-
-### (Skip this if you already have Chrome)
+## Firefox Installation (Debian / Ubuntu)
 
 ```bash
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt update
 ```
 
 ```bash
-sudo apt install ./google-chrome-stable_current_amd64.deb
+sudo apt install firefox-esr
+```
+
+## Geckodriver Installation (Debian / Ubuntu)
+
+```bash
+wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+```
+
+```bash
+tar -xvzf geckodriver*
+```
+
+```bash
+chmod +x geckodriver
+```
+
+```bash
+sudo mv geckodriver /usr/local/bin/
 ```
 
 ## TOR Installation (Debian / Ubuntu)
-
-### (Skip this if you already have TOR)
 
 ```bash
 sudo apt update
@@ -55,7 +69,7 @@ sudo apt install tor
 ## Youtooler Installation (Linux)
 
 ```bash
-git clone https://github.com/Fraccs/youtooler.git
+git clone --single-branch --branch python-latest https://github.com/Fraccs/youtooler.git
 ```
 
 ```bash
@@ -66,6 +80,10 @@ cd youtooler
 pip install -r requirements.txt
 ```
 
+```bash
+pip install .
+```
+
 ## Usage
 
 > The program binds 5 TOR subprocesses to the ports: ```9050, 9052, 9054, 9056, 9058```, make sure that nothing else is running on those ports.
@@ -73,5 +91,9 @@ pip install -r requirements.txt
 > Make sure that the URL is in the correct format: ```https://www.youtube.com/watch?v=<video_id>```
 
 ```bash
-$ python3 youtooler.py --url <url_of_video>
+cd src
+```
+
+```bash
+python3 youtooler.py --url <url_of_video>
 ```
