@@ -18,6 +18,8 @@ isodate==0.6.1
     # via -r requirements.in
 lxml==4.8.0
     # by hand
+pysocks
+    # by hand
 python-string-utils==1.0.0
     # via -r requirements.in
 requests==2.27.1
