@@ -3,8 +3,8 @@ import random
 import threading
 import time
 from selenium.common.exceptions import *
-from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver import Remote
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from .tor import *
 from .utils import get_error_message, get_log_message, get_warning_message, stderr
 from .helpers.exceptions import TorStartFailedException
@@ -23,17 +23,16 @@ class YoutoolerThread(threading.Thread):
         self.__exit_handler = atexit.register(self.tor.stop_tor)
 
     def run(self):
-        # Firefox proxy setup
+        # Proxying through TOR
         firefox_capabilities = DesiredCapabilities.FIREFOX
         firefox_capabilities['proxy'] = {
             'proxyType': 'MANUAL',
-            'socksProxy': f'localhost:{self.tor.socks_port}',
+            'socksProxy': f'app:{self.tor.socks_port}',
             'socksVersion': 5
         }
 
-        # Firefox setup
-        driver = Firefox(capabilities=firefox_capabilities)
-        driver.set_window_size(500, 300)
+        time.sleep(5)
+        driver = Remote('http://firefox:4444/wd/hub', DesiredCapabilities.FIREFOX)
 
         # Starting TOR
         try:
@@ -45,13 +44,15 @@ class YoutoolerThread(threading.Thread):
             print(get_log_message('TOR-STARTED', self.tor.socks_port, self.tor.control_port))
 
         while True:
+            time.sleep(5)
             self.tor.renew_circuit() # Renewing circuit each cycle
             driver.delete_all_cookies()
 
             # Video request
             try:
                 driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')  
-            except:
+            except Exception as e:
+                print(e)
                 print(get_warning_message('REQUEST-FAILED', self.name, self.tor.get_external_address()), file=stderr)
             else:
                 print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
