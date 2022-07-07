@@ -14,23 +14,21 @@
 
 ***This is just an experiment, the usage of this program is NOT RECCOMENDED.***
 
-***Most TOR nodes are blacklisted, this makes the potential gains obtainable with the program close to none, furthermore YouTube could reset the views counter of the video at any time if any suspicious activity is detected.***
-
 ## Requirements
 
-- **Linux** High end machine.
+- **Linux** High end machine
 
 - **Python** 3.10.x
 
-- **Firefox** browser.
+- **Firefox**
 
-- **TOR**.
+- **Geckodriver**
+
+- **TOR**
 
 - **High speed** internet connection.
 
 ## Firefox Installation (Debian / Ubuntu)
-
-### (Skip this if you already have Firefox)
 
 ```bash
 sudo apt update
@@ -59,8 +57,6 @@ sudo mv geckodriver /usr/local/bin/
 ```
 
 ## TOR Installation (Debian / Ubuntu)
-
-### (Skip this if you already have TOR)
 
 ```bash
 sudo apt update
