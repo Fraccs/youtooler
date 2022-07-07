@@ -4,7 +4,6 @@ import threading
 import time
 from selenium.common.exceptions import *
 from selenium.webdriver import Firefox, DesiredCapabilities
-from selenium.webdriver.firefox.options import Options
 from .tor import *
 from .utils import get_error_message, get_log_message, get_warning_message, stderr
 from .helpers.exceptions import TorStartFailedException
