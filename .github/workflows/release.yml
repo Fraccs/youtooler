@@ -1,0 +1,18 @@
+name: release
+
+on:
+  push:
+    branches: [ "python-latest" ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Automated release based on setup.cfg version tag
+      - name: Automated releasing
+        run: |
+          VERSION="python-$(grep -o '[0-9]\.[0-9]\.[0-9]' ../setup.cfg)"
+          gh release create $VERSION
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
