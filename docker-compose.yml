@@ -17,10 +17,13 @@ services:
     networks:
       - network
   tor:
-    build: src/tor/
+    build:
+      dockerfile: Dockerfile.tor
+      args:
+        - SOCKS_PORT=9100
     hostname: tor
     expose:
-      - 9050
+      - 9100
     networks:
       - network
 networks:
