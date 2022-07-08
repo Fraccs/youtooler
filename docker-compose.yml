@@ -9,9 +9,19 @@ services:
       - network
   firefox:
     image: selenium/standalone-firefox
+    depends_on:
+      - tor
     hostname: firefox
     ports:
       - 4444:4444
+      - 7900:7900
+    networks:
+      - network
+  tor:
+    build: src/tor
+    hostname: tor
+    expose:
+      - 9100-9109
     networks:
       - network
 networks:

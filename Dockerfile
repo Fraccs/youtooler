@@ -2,10 +2,6 @@ FROM python:3.10.5-slim-buster
 
 WORKDIR /app
 
-# Installing TOR
-RUN apt-get update
-RUN apt-get install -y tor
-
 # Installing python requirements
 COPY . .
 RUN pip install -r requirements.txt
