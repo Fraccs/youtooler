@@ -1,0 +1,13 @@
+FROM alpine:latest
+
+WORKDIR /tor
+
+RUN apk update & \
+    apk add tor
+
+ARG SOCKS_PORT
+RUN echo "SocksPort tor:${SOCKS_PORT}" > torrc.temp
+
+ENTRYPOINT ["tor"]
+
+CMD ["-f", "torrc.temp"]
