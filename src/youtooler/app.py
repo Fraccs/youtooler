@@ -6,7 +6,7 @@ from youtooler.utils import get_video_duration
 class Youtooler:
     def __init__(self):
         self.__exit_handler = atexit.register(self.stop)
-        self.socks_ports = [9050, 9052, 9054, 9056, 9058]
+        self.socks_ports = [9100, 9102, 9104, 9106, 9108]
         self.threads = []
 
     def print_logo(self):
@@ -22,7 +22,7 @@ class Youtooler:
     def start(self, url: str):
         '''
         Starts 5 threads with one TOR subprocess each.
-        Default socks_ports: 9050, 9052, 9054, 9056, 9058.
+        Default socks_ports: 9100, 9102, 9104, 9106, 9108.
         '''
 
         video_duration = get_video_duration(url)
