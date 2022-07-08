@@ -13,7 +13,6 @@ jobs:
       - name: Automated releasing
         run: |
           VERSION="python-$(grep -o '[0-9]\.[0-9]\.[0-9]' setup.cfg)"
-          echo $VERSION
           gh release create $VERSION -t $VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
