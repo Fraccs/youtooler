@@ -14,16 +14,14 @@ services:
     hostname: firefox
     ports:
       - 4444:4444
+      - 7900:7900
     networks:
       - network
   tor:
-    build:
-      dockerfile: Dockerfile.tor
-      args:
-        - SOCKS_PORT=9100
+    build: src/tor
     hostname: tor
     expose:
-      - 9100
+      - 9100-9109
     networks:
       - network
 networks:
