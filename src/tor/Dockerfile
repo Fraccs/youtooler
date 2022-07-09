@@ -2,7 +2,7 @@ FROM alpine:latest
 
 WORKDIR /tor
 
-RUN apk update & \
+RUN apk update \
     apk add tor
 
 COPY start.sh .
