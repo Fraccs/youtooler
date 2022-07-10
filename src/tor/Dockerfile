@@ -1,12 +1,12 @@
-FROM alpine:latest
+FROM python:3.10-alpine
 
 WORKDIR /tor
 
-RUN apk update \
-    apk add tor
+RUN apk update
+RUN apk add tor
 
-COPY start.sh .
+COPY start.py .
 
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["python"]
 
-CMD ["start.sh"]
+CMD ["start.py"]
