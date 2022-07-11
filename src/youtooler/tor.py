@@ -1,8 +1,8 @@
+import json
 import random
 import requests
 from stem import Signal
 from stem.control import Controller
-from .utils import get_secure_password
 
 class Tor:
     '''Simplifies the creation of TOR circuits.'''
@@ -10,7 +10,7 @@ class Tor:
     def __init__(self, socks_port: int):
         self.socks_port = socks_port
         self.control_port = socks_port + 1
-        self.password = get_secure_password(20)
+        self.password = self.__get_control_port_password__()
 
     def renew_circuit(self):
         '''Sends NEWNYM signal to the TOR control port in order to renew the circuit'''
@@ -57,3 +57,8 @@ class Tor:
                     return response.text.strip()
                 else: # Removing API if not working
                     apis.pop(apis.index(api))
+
+    def __get_control_port_password__(self):
+        '''Returns the control_port password that was set on tor:<self.control_port>'''
+        
+        return json.loads(requests.get('http://tor:5000').text)[str(self.control_port)]
