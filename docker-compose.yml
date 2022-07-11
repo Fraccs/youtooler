@@ -21,6 +21,7 @@ services:
     build: src/tor
     hostname: tor
     expose:
+      - 5000
       - 9100-9109
     networks:
       - network
