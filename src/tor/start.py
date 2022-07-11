@@ -35,6 +35,7 @@ def main():
         create_torrc(port)
         create_data_directory(port)
         start_tor(port)
+        break
     
     while True: # Keeping container up
         time.sleep(3600)
