@@ -1,6 +1,7 @@
 import flask
 import os
 import re
+import shutil
 import string_utils
 import subprocess
 
@@ -47,7 +48,7 @@ class Tor:
         PATH = f'torrc.{self.socks_port}'
 
         with open(PATH, 'w') as torrc:
-            torrc.write(f'ControlPort {self.control_port}\n')
+            torrc.write(f'ControlPort {HOSTNAME}:{self.control_port}\n')
             torrc.write(f'DataDirectory {self.socks_port}\n')
             torrc.write(f'SocksPort {HOSTNAME}:{self.socks_port}\n')
             torrc.write(f'HashedControlPassword {self.__hash_password__()}')
@@ -60,6 +61,9 @@ class Tor:
         '''
         
         PATH = f'{self.socks_port}'
+
+        if os.path.isdir(PATH):
+            shutil.rmtree(PATH)
 
         os.mkdir(PATH)
 

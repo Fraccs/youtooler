@@ -36,7 +36,7 @@ class YoutoolerThread(threading.Thread):
         while True:
             time.sleep(5)
 
-            # self.tor.renew_circuit() # Renewing circuit each cycle
+            self.tor.renew_circuit() # Renewing circuit each cycle
             driver.delete_all_cookies()
 
             # Video request
