@@ -1,10 +1,10 @@
-import atexit
 import random
 import threading
 import time
 from selenium.common.exceptions import *
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from .helpers.exceptions import TorConnectionFailed
 from .tor import *
 from .utils import get_log_message, get_warning_message, stderr
 
@@ -21,6 +21,43 @@ class YoutoolerThread(threading.Thread):
         self.tor = Tor(socks_port)
 
     def run(self):
+        driver = self.connect_to_remote_wd()
+
+        while True:
+            # Video request
+            driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')
+            print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
+            
+            # Accepting cookies and starting video
+            self.handle_start_video(driver)
+
+            # Renewing circuit & cookies each cycle
+            time.sleep(random.uniform(30, 35))
+            self.tor.renew_circuit()
+            driver.delete_all_cookies()
+    
+    def handle_start_video(self, driver: Remote):
+        # Accepting cookies
+        cookie_buttons = driver.find_elements_by_css_selector('.yt-simple-endpoint.style-scope.ytd-button-renderer')
+
+        for button in cookie_buttons:
+            if button.text == 'ACCEPT ALL':
+                button.click()
+
+        # Starting video
+        try:
+            start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+        except NoSuchElementException:
+            print(get_warning_message('PLAY-BTN-NOT-FOUND'), file=stderr)
+        
+        try:
+            start_button.click()
+        except ElementClickInterceptedException:
+            print(get_warning_message('PLAY-BTN-UNREACHABLE'), file=stderr)
+        except ElementNotInteractableException:
+            print(get_warning_message('PLAY-BTN-UNSCROLLABLE'), file=stderr)
+
+    def connect_to_remote_wd(self) -> Remote:
         # Proxying through TOR
         firefox_capabilities = DesiredCapabilities.FIREFOX
         firefox_capabilities['proxy'] = {
@@ -29,46 +66,32 @@ class YoutoolerThread(threading.Thread):
             'socksVersion': 5
         }
 
-        time.sleep(20)
+        # Checking if tor proxy has bootstrapped
+        proxies = {
+            'http': f'socks5://tor:{self.tor.socks_port}',
+            'https': f'socks5://tor:{self.tor.socks_port}'
+        }
+        
+        for _ in range(30):
+            try:
+                response = requests.get('https://check.torproject.org', proxies=proxies)
+            except:
+                time.sleep(1)
+            else:
+                if 'Congratulations' in response.text:
+                    break
+                else:
+                    raise TorConnectionFailed
+
+        # Checking if the remote wd has bootstrapped
+        for _ in range(30):
+            try:
+                requests.get('http://firefox:4444')
+            except:
+                time.sleep(1)
+            else:
+                break
 
         driver = Remote('http://firefox:4444/wd/hub', DesiredCapabilities.FIREFOX)
 
-        while True:
-            time.sleep(5)
-
-            self.tor.renew_circuit() # Renewing circuit each cycle
-            driver.delete_all_cookies()
-
-            # Video request
-            try:
-                driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')  
-            except Exception as e:
-                print(e)
-                print(get_warning_message('REQUEST-FAILED', self.name, self.tor.get_external_address()), file=stderr)
-            else:
-                print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
-
-                # Accepting cookies
-                cookie_buttons = driver.find_elements_by_css_selector('.yt-simple-endpoint.style-scope.ytd-button-renderer')
-
-                for button in cookie_buttons:
-                    if button.text == 'ACCEPT ALL':
-                        button.click()
-
-                # Starting video
-                try:
-                    start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
-                except NoSuchElementException:
-                    print(get_warning_message('PLAY-BTN-NOT-FOUND'), file=stderr)
-                    continue
-                
-                try:
-                    start_button.click()
-                except ElementClickInterceptedException:
-                    print(get_warning_message('PLAY-BTN-UNREACHABLE'), file=stderr)
-                    continue
-                except ElementNotInteractableException:
-                    print(get_warning_message('PLAY-BTN-UNSCROLLABLE'), file=stderr)
-                    continue
-
-                time.sleep(random.uniform(10, 15))
+        return driver

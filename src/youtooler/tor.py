@@ -1,6 +1,7 @@
 import json
 import random
 import requests
+import socket
 from stem import Signal
 from stem.control import Controller
 
@@ -15,7 +16,9 @@ class Tor:
     def renew_circuit(self):
         '''Sends NEWNYM signal to the TOR control port in order to renew the circuit'''
 
-        with Controller.from_port(address='tor', port=self.control_port) as controller:
+        address = socket.gethostbyname('tor')
+
+        with Controller.from_port(address=address, port=self.control_port) as controller:
             controller.authenticate(password=self.password)
             controller.signal(Signal.NEWNYM)
 
