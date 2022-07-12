@@ -18,8 +18,9 @@ def get_log_message(log: str, *args) -> str:
     '''Returns the log message corresponding to the passed log code.'''
 
     log_messages = {
+        'REQUEST-SUCCESSFUL': 'Successful request made by {} | Tor IP: {}',
         'TOR-STARTED': 'Started TOR on SocksPort {}, ControlPort {}',
-        'REQUEST-SUCCESSFUL': 'Successful request made by {} | Tor IP: {}'
+        'VIDEO-STARTED': '{} started successfully'
     }
 
     if log_messages.get(log) is None:
@@ -93,6 +94,21 @@ def get_video_duration(url: str) -> int:
         return duration.seconds
     
     raise DurationUnestablishedException
+
+def get_video_title(url: str) -> str:
+    for _ in range(10): # 10 retries
+        try:
+            html = requests.get(url)
+        except ConnectionError:
+            continue
+
+        parsed_html = BeautifulSoup(markup=html.text, features='lxml')
+
+        # Searching for the tag <meta name="title" content="">
+        title_tag = parsed_html.find('meta', {'name': 'title'})
+        title = title_tag.attrs['content']
+    
+    return title
 
 def verify_youtube_url(url: str) -> bool:
     '''Checks whether the passed url is a real YouTube video or not.'''
