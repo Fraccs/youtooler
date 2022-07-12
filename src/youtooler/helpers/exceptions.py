@@ -6,6 +6,10 @@ class LogMessageException(Exception):
     '''Raised if an error message that doesn't exist is requested'''
     pass
 
+class TorConnectionFailed(Exception):
+    '''Raised if tor could not bootstrap correctly'''
+    pass
+
 class UnsecureLength(Exception):
     '''Raised if an unsecure length is passed when generating a secure password'''
     pass
