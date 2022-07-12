@@ -6,7 +6,7 @@ from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from .helpers.exceptions import TorConnectionFailed
 from .tor import *
-from .utils import get_log_message, get_warning_message, stderr
+from .utils import get_log_message, get_warning_message, get_video_title, stderr
 
 class YoutoolerThread(threading.Thread):
     '''
@@ -46,16 +46,15 @@ class YoutoolerThread(threading.Thread):
 
         # Starting video
         try:
-            start_button = driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button')
+            driver.find_element_by_css_selector('.ytp-large-play-button.ytp-button').click()
         except NoSuchElementException:
             print(get_warning_message('PLAY-BTN-NOT-FOUND'), file=stderr)
-        
-        try:
-            start_button.click()
         except ElementClickInterceptedException:
             print(get_warning_message('PLAY-BTN-UNREACHABLE'), file=stderr)
         except ElementNotInteractableException:
             print(get_warning_message('PLAY-BTN-UNSCROLLABLE'), file=stderr)
+        else:
+            print(get_log_message('VIDEO-STARTED', get_video_title(self.url)))
 
     def connect_to_remote_wd(self) -> Remote:
         # Proxying through TOR
