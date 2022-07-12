@@ -24,20 +24,17 @@ class YoutoolerThread(threading.Thread):
         driver = self.connect_to_remote_wd()
 
         while True:
+            # Video request
+            driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')
+            print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
+            
+            # Accepting cookies and starting video
+            self.handle_start_video(driver)
+
             # Renewing circuit & cookies each cycle
             time.sleep(random.uniform(30, 35))
             self.tor.renew_circuit()
             driver.delete_all_cookies()
-
-            # Video request
-            try:
-                driver.get(f'{self.url}&t={random.randint(1, self.video_duration)}s')  
-            except:
-                print(get_warning_message('REQUEST-FAILED', self.name, self.tor.get_external_address()), file=stderr)
-            else:
-                print(get_log_message('REQUEST-SUCCESSFUL', self.name, self.tor.get_external_address()))
-
-                self.handle_start_video(driver)
     
     def handle_start_video(self, driver: Remote):
         # Accepting cookies
