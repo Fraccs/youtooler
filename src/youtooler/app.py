@@ -29,7 +29,7 @@ class Youtooler:
 
         for port in self.socks_ports:
             self.threads.append(YoutoolerThread(url, video_duration, port))
-            break
+        
         for thread in self.threads:
             thread.setDaemon(True)
             thread.start()

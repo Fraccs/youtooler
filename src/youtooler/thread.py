@@ -5,6 +5,7 @@ from selenium.common.exceptions import *
 from selenium.webdriver import Remote
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from .helpers.exceptions import TorConnectionFailed
+from string import ascii_letters, punctuation
 from .tor import *
 from .utils import get_log_message, get_warning_message, get_video_title, stderr
 
@@ -57,6 +58,10 @@ class YoutoolerThread(threading.Thread):
             print(get_log_message('VIDEO-STARTED', get_video_title(self.url)))
 
     def connect_to_remote_wd(self) -> Remote:
+        # Choosing wd based on thread id
+        thread_id = int(self.name.strip(ascii_letters + punctuation))
+        hostnames = ['firefox-a', 'firefox-b', 'firefox-c', 'firefox-d', 'firefox-e']
+
         # Proxying through TOR
         firefox_capabilities = DesiredCapabilities.FIREFOX
         firefox_capabilities['proxy'] = {
@@ -85,12 +90,12 @@ class YoutoolerThread(threading.Thread):
         # Checking if the remote wd has bootstrapped
         for _ in range(30):
             try:
-                requests.get('http://firefox:4444')
+                requests.get(f'http://{hostnames[thread_id - 1]}:4444')
             except:
                 time.sleep(1)
             else:
                 break
 
-        driver = Remote('http://firefox:4444/wd/hub', DesiredCapabilities.FIREFOX)
+        driver = Remote(f'http://{hostnames[thread_id - 1]}:4444/wd/hub', DesiredCapabilities.FIREFOX)
 
         return driver
