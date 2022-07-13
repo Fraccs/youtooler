@@ -7,14 +7,54 @@ services:
     hostname: app
     networks:
       - network
-  firefox:
+  firefox-1:
     image: selenium/standalone-firefox
     depends_on:
       - tor
-    hostname: firefox
+    hostname: firefox-a
     ports:
       - 4444:4444
       - 7900:7900
+    networks:
+      - network
+  firefox-2:
+    image: selenium/standalone-firefox
+    depends_on:
+      - tor
+    hostname: firefox-b
+    ports:
+      - 4445:4444
+      - 7901:7900
+    networks:
+      - network
+  firefox-3:
+    image: selenium/standalone-firefox
+    depends_on:
+      - tor
+    hostname: firefox-c
+    ports:
+      - 4446:4444
+      - 7902:7900
+    networks:
+      - network
+  firefox-4:
+    image: selenium/standalone-firefox
+    depends_on:
+      - tor
+    hostname: firefox-d
+    ports:
+      - 4447:4444
+      - 7903:7900
+    networks:
+      - network
+  firefox-5:
+    image: selenium/standalone-firefox
+    depends_on:
+      - tor
+    hostname: firefox-e
+    ports:
+      - 4448:4444
+      - 7904:7900
     networks:
       - network
   tor:
