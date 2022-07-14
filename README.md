@@ -4,7 +4,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/Fraccs/youtooler)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/Fraccs/youtooler)
 
-# Youtooler
+# Docker Youtooler
 
 > Multithreaded YouTube viewer BOT based on TOR.
 
@@ -16,84 +16,36 @@
 
 ## Requirements
 
-- **Linux** High end machine
+- **Docker**
 
-- **Python** 3.10.x
+- **Docker Compose**
 
-- **Firefox**
+- **High end** machine
 
-- **Geckodriver**
+- **High speed** internet connection
 
-- **TOR**
-
-- **High speed** internet connection.
-
-## Firefox Installation (Debian / Ubuntu)
+## Youtooler Installation
 
 ```bash
-sudo apt update
-```
-
-```bash
-sudo apt install firefox-esr
-```
-
-## Geckodriver Installation (Debian / Ubuntu)
-
-```bash
-wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-```
-
-```bash
-tar -xvzf geckodriver*
-```
-
-```bash
-chmod +x geckodriver
-```
-
-```bash
-sudo mv geckodriver /usr/local/bin/
-```
-
-## TOR Installation (Debian / Ubuntu)
-
-```bash
-sudo apt update
-```
-
-```bash
-sudo apt install tor
-```
-
-## Youtooler Installation (Linux)
-
-```bash
-git clone --single-branch --branch python-latest https://github.com/Fraccs/youtooler.git
+git clone --single-branch --branch docker-latest https://github.com/Fraccs/youtooler.git
 ```
 
 ```bash
 cd youtooler
 ```
 
-```bash
-pip install -r requirements.txt
-```
-
-```bash
-pip install .
-```
-
 ## Usage
 
-> The program binds 5 TOR subprocesses to the ports: ```9050, 9052, 9054, 9056, 9058```, make sure that nothing else is running on those ports.
+- Open the Dockefile in the root directory and enter the url of the video between the empty quotation marks in the following line.
 
 > Make sure that the URL is in the correct format: ```https://www.youtube.com/watch?v=<video_id>```
 
-```bash
-cd src
+```Dockerfile
+>>>>> CMD ["python3", "-u", "src/youtooler.py", "--url", ""] <<<<<
 ```
 
+- Then build and run the containers with the following command.
+
 ```bash
-python3 youtooler.py --url <url_of_video>
+docker-compose up --build -d
 ```
