@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 # Installing youtooler package locally
 RUN pip install -e .
 
-CMD ["python3", "-u", "src/youtooler.py", "--url", "https://www.youtube.com/watch?v=YvkIygMyEQc"]
+CMD ["python3", "-u", "src/youtooler.py", "--url", ""]
